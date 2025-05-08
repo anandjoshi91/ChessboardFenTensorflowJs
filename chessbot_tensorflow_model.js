@@ -76,27 +76,41 @@ function updateUI(chessboard) {
   // Raw fen text.
   fen_element.innerHTML = chessboard.fen;
 
-  function makeLichessAnalysisURL(fen) {
-    return "https://lichess.org/analysis/" + fen;
+  // Function to URL encode the FEN string with additional parameters
+  function encodeQuickToolFEN(fen, side) {
+    return encodeURIComponent(fen + " " + side + " KQkq - 0 1");
   }
+
+  // Create URLs for onlinequicktool instead of lichess
+  function makeQuickToolAnalysisURL(fen, side) {
+    return "https://onlinequicktool.com/chess-next-move/?fen=" + encodeQuickToolFEN(fen, side);
+  }
+
+  // Keep the editor URL function for compatibility
   function makeLichessEditorURL(fen) {
-    return "https://lichess.org/editor/" + fen;
+    // Since onlinequicktool doesn't have a separate editor, use the same analysis URL
+    return "https://onlinequicktool.com/chess-next-move/?fen=" + encodeURIComponent(fen);
   }
 
-  function updateLichessUrl(id, str) {
-    document.getElementById(id).href = str
+  function updateOQTUrl(id, str) {
+    document.getElementById(id).href = str;
   }
-  updateLichessUrl('lichess_analysis_white', makeLichessAnalysisURL(chessboard.fen+'_w'));
-  updateLichessUrl('lichess_analysis_black', makeLichessAnalysisURL(chessboard.fen+'_b'));
 
-  updateLichessUrl('lichess_editor_white', makeLichessEditorURL(chessboard.fen+'_w'));
-  updateLichessUrl('lichess_editor_black', makeLichessEditorURL(chessboard.fen+'_b'));
+  // Update the URLs to use onlinequicktool
+  updateOQTUrl('lichess_analysis_white', makeQuickToolAnalysisURL(chessboard.fen, 'w'));
+  updateOQTUrl('lichess_analysis_black', makeQuickToolAnalysisURL(chessboard.fen, 'b'));
 
-  updateLichessUrl('lichess_analysis_white_inverted', makeLichessAnalysisURL(reversed_fen+'_w'));
-  updateLichessUrl('lichess_analysis_black_inverted', makeLichessAnalysisURL(reversed_fen+'_b'));
+  // Keep the editor links for compatibility
+  updateOQTUrl('lichess_editor_white', makeQuickToolAnalysisURL(chessboard.fen, 'w'));
+  updateOQTUrl('lichess_editor_black', makeQuickToolAnalysisURL(chessboard.fen, 'b'));
 
-  updateLichessUrl('lichess_editor_white_inverted', makeLichessEditorURL(reversed_fen+'_w'));
-  updateLichessUrl('lichess_editor_black_inverted', makeLichessEditorURL(reversed_fen+'_b'));
+  // Update the inverted board URLs
+  updateOQTUrl('oqt_analysis_white_inverted', makeQuickToolAnalysisURL(reversed_fen, 'w'));
+  updateOQTUrl('oqt_analysis_black_inverted', makeQuickToolAnalysisURL(reversed_fen, 'b'));
+
+  // Keep the inverted editor links for compatibility
+  updateOQTUrl('oqt_editor_white_inverted', makeQuickToolAnalysisURL(reversed_fen, 'w'));
+  updateOQTUrl('oqt_editor_black_inverted', makeQuickToolAnalysisURL(reversed_fen, 'b'));
 
   prediction_block.style.display = "block";
 
